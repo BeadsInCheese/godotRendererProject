@@ -474,7 +474,14 @@ void ProjectDialog::_renderer_selected() {
 				String::utf8("\n•  ") + TTR("Intended for low-end/older devices.") +
 				String::utf8("\n•  ") + TTR("Uses OpenGL 3 backend (OpenGL 3.3/ES 3.0/WebGL2).") +
 				String::utf8("\n•  ") + TTR("Fastest rendering of simple scenes."));
-	} else {
+	}else if (renderer_type == "Raytracing") {
+		renderer_info->set_text(
+				String::utf8("•  ") + TTR("Supports raytracing hardware only.") +
+				String::utf8("\n•  ") + TTR("advanced 3D graphics.") +
+				String::utf8("\n•  ") + TTR("Intended for high-end/newer devices.") +
+				String::utf8("\n•  ") + TTR("Uses Vulkan backend.") );
+	} 
+	else {
 		WARN_PRINT("Unknown renderer type. Please report this as a bug on GitHub.");
 	}
 
@@ -533,6 +540,8 @@ void ProjectDialog::ok_pressed() {
 			project_features.push_back("Forward Plus");
 		} else if (renderer_type == "mobile") {
 			project_features.push_back("Mobile");
+		} else if (renderer_type == "RayTracing") {
+			project_features.push_back("RayTracing");
 		} else if (renderer_type == "gl_compatibility") {
 			project_features.push_back("GL Compatibility");
 			// Also change the default rendering method for the mobile override.
@@ -982,6 +991,8 @@ ProjectDialog::ProjectDialog() {
 	Button *rs_button = memnew(CheckBox);
 	rs_button->set_button_group(renderer_button_group);
 	rs_button->set_text(TTR("Forward+"));
+
+
 #ifndef RD_ENABLED
 	rs_button->set_disabled(true);
 #endif
@@ -993,7 +1004,20 @@ ProjectDialog::ProjectDialog() {
 	}
 	rs_button = memnew(CheckBox);
 	rs_button->set_button_group(renderer_button_group);
-	rs_button->set_text(TTR("Mobile"));
+	rs_button->set_text(TTR("RayTracing"));
+#ifndef RD_ENABLED
+	rs_button->set_disabled(true);
+#endif
+	rs_button->set_meta(SNAME("rendering_method"), "RayTracing");
+	rs_button->connect(SceneStringName(pressed), callable_mp(this, &ProjectDialog::_renderer_selected));
+	rvb->add_child(rs_button);
+	if (default_renderer_type == "RayTracing") {
+		rs_button->set_pressed(true);
+	}
+
+		rs_button = memnew(CheckBox);
+	rs_button->set_button_group(renderer_button_group);
+	rs_button->set_text(TTR("mobile"));
 #ifndef RD_ENABLED
 	rs_button->set_disabled(true);
 #endif
@@ -1003,6 +1027,11 @@ ProjectDialog::ProjectDialog() {
 	if (default_renderer_type == "mobile") {
 		rs_button->set_pressed(true);
 	}
+
+
+
+
+
 	rs_button = memnew(CheckBox);
 	rs_button->set_button_group(renderer_button_group);
 	rs_button->set_text(TTR("Compatibility"));
@@ -1012,6 +1041,7 @@ ProjectDialog::ProjectDialog() {
 	rs_button->set_meta(SNAME("rendering_method"), "gl_compatibility");
 	rs_button->connect(SceneStringName(pressed), callable_mp(this, &ProjectDialog::_renderer_selected));
 	rvb->add_child(rs_button);
+
 #if defined(GLES3_ENABLED)
 	if (default_renderer_type == "gl_compatibility") {
 		rs_button->set_pressed(true);

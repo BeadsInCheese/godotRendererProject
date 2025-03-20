@@ -6622,6 +6622,8 @@ void EditorNode::_update_renderer_color() {
 		renderer->add_theme_color_override(SceneStringName(font_color), theme->get_color(SNAME("mobile_color"), EditorStringName(Editor)));
 	} else if (rendering_method == "gl_compatibility") {
 		renderer->add_theme_color_override(SceneStringName(font_color), theme->get_color(SNAME("gl_compatibility_color"), EditorStringName(Editor)));
+	}else if (rendering_method == "RayTracing") {
+		renderer->add_theme_color_override(SceneStringName(font_color), theme->get_color(SNAME("gl_compatibility_color"), EditorStringName(Editor)));
 	}
 }
 
@@ -6654,6 +6656,9 @@ void EditorNode::_add_renderer_entry(const String &p_renderer_name, bool p_mark_
 	if (p_renderer_name == "gl_compatibility") {
 		item_text = TTR("Compatibility");
 	}
+	if (p_renderer_name == "RayTracing") {
+		item_text = TTR("RayTracing");
+	}
 	if (p_mark_overridden) {
 		item_text += " " + TTR("(Overridden)");
 	}
@@ -6667,6 +6672,10 @@ void EditorNode::_set_renderer_name_save_and_restart() {
 		// This prevents visual discrepancies between desktop and mobile platforms.
 		ProjectSettings::get_singleton()->set("rendering/renderer/rendering_method.mobile", renderer_request);
 	} else if (renderer_request == "forward_plus") {
+		// Use the equivalent mobile rendering method. This prevents the rendering method from staying
+		// on its old choice if moving from `gl_compatibility` to `forward_plus`.
+		ProjectSettings::get_singleton()->set("rendering/renderer/rendering_method.mobile", "mobile");
+	}else if (renderer_request == "RayTracing") {
 		// Use the equivalent mobile rendering method. This prevents the rendering method from staying
 		// on its old choice if moving from `gl_compatibility` to `forward_plus`.
 		ProjectSettings::get_singleton()->set("rendering/renderer/rendering_method.mobile", "mobile");
@@ -7591,7 +7600,7 @@ EditorNode::EditorNode() {
 	renderer->set_theme_type_variation("TopBarOptionButton");
 	renderer->set_fit_to_longest_item(false);
 	renderer->set_focus_mode(Control::FOCUS_NONE);
-	renderer->set_tooltip_text(TTR("Choose a rendering method.\n\nNotes:\n- On mobile platforms, the Mobile rendering method is used if Forward+ is selected here.\n- On the web platform, the Compatibility rendering method is always used."));
+	renderer->set_tooltip_text(TTR("Choose a rendering method. raytrace to be done\n\nNotes:\n- On mobile platforms, the Mobile rendering method is used if Forward+ is selected here.\n- On the web platform, the Compatibility rendering method is always used."));
 
 	right_menu_hb->add_child(renderer);
 

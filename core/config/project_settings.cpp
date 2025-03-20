@@ -99,6 +99,7 @@ const PackedStringArray ProjectSettings::_get_supported_features() {
 #ifdef RD_ENABLED
 	features.append("Forward Plus");
 	features.append("Mobile");
+	features.append("RayTracing");
 #endif
 
 #ifdef GLES3_ENABLED
