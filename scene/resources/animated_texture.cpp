@@ -79,6 +79,8 @@ void AnimatedTexture::_update_proxy() {
 	}
 
 	if (frames[current_frame].texture.is_valid()) {
+
+
 		RenderingServer::get_singleton()->texture_proxy_update(proxy, frames[current_frame].texture->get_rid());
 	}
 }

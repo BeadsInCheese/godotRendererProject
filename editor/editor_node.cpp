@@ -169,6 +169,7 @@
 #include "modules/modules_enabled.gen.h" // For gdscript, mono.
 
 #include <stdlib.h>
+#include <print>
 
 EditorNode *EditorNode::singleton = nullptr;
 
@@ -6678,7 +6679,7 @@ void EditorNode::_set_renderer_name_save_and_restart() {
 	}else if (renderer_request == "RayTracing") {
 		// Use the equivalent mobile rendering method. This prevents the rendering method from staying
 		// on its old choice if moving from `gl_compatibility` to `forward_plus`.
-		ProjectSettings::get_singleton()->set("rendering/renderer/rendering_method.mobile", "mobile");
+		ProjectSettings::get_singleton()->set("rendering/renderer/rendering_method.raytracing", "raytracing");
 	}
 
 	ProjectSettings::get_singleton()->save();
@@ -7614,7 +7615,7 @@ EditorNode::EditorNode() {
 	String current_renderer_ps = GLOBAL_GET("rendering/renderer/rendering_method");
 	current_renderer_ps = current_renderer_ps.to_lower();
 	String current_renderer_os = OS::get_singleton()->get_current_rendering_method().to_lower();
-
+	print_line("rendering string: ", current_renderer_ps);
 	// Add the renderers name to the UI.
 	if (current_renderer_ps == current_renderer_os) {
 		renderer->connect(SceneStringName(item_selected), callable_mp(this, &EditorNode::_renderer_selected));
@@ -7627,7 +7628,9 @@ EditorNode::EditorNode() {
 			renderer->set_item_metadata(i, rendering_method);
 			// Lowercase for standard comparison.
 			rendering_method = rendering_method.to_lower();
+			print_line("checking method: ",rendering_method);
 			if (current_renderer_ps == rendering_method) {
+				print_line("rendering selection success!");
 				renderer->select(i);
 				renderer_current = i;
 			}

@@ -35,6 +35,7 @@
 
 #include "servers/rendering/renderer_rd/forward_clustered/render_forward_clustered.h"
 #include "servers/rendering/renderer_rd/forward_mobile/render_forward_mobile.h"
+#include "servers/rendering/renderer_rd/raytrace/render_raytrace.h"
 
 void RendererCompositorRD::blit_render_targets_to_screen(DisplayServer::WindowID p_screen, const BlitToScreen *p_render_targets, int p_amount) {
 	Error err = RD::get_singleton()->screen_prepare_for_drawing(p_screen);
@@ -330,7 +331,8 @@ RendererCompositorRD::RendererCompositorRD() {
 		scene = memnew(RendererSceneRenderImplementation::RenderForwardClustered());
 	} else if (rendering_method == "RayTracing") {
 		//todo
-		scene = memnew(RendererSceneRenderImplementation::RenderForwardClustered());
+		print_line("Raytracer activated");
+		scene = memnew(RendererSceneRenderImplementation::RenderRaytrace());
 	} 
 	
 	else {
